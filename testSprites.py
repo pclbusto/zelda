@@ -11,11 +11,13 @@
 
 import pygame
 
-def addImage(lista,imagen,x1, y1,x2,y2):
+def addImage(lista,imagen,x1, y1,x2,y2,invert):
     img1 = pygame.Surface((x2-x1+1, y2-y1+1))
     img1.blit(imagen, (0, 0), (x1, y1, x2-x1+1, y2-y1+1))
     img1.set_colorkey((0, 255, 0))
     img1 = img1.convert_alpha()
+    if invert:
+        img1 = pygame.transform.flip(img1, True, False)
     lista.append(img1)
 
 
@@ -38,75 +40,60 @@ pygame.display.set_caption("Mi Primer juego en Informática")
 
 hecho = False
 
-# Se usa para establecer cuan rápido se actualiza la pantalla
+# Se usa para esta blecer cuan rápido se actualiza la pantalla
 
 megaman = pygame.image.load("descarga.png").convert_alpha()
-list_run = []
-
-# addImage(list_run,megaman,344,427,424,564)
-# addImage(list_run,megaman,427,423,520,564)
-# addImage(list_run,megaman,526,432,659,565)
-# addImage(list_run,megaman,685,429,774,566)
-# addImage(list_run,megaman,780,428,879,569)
-# addImage(list_run,megaman,889,433,1024,565)
-
-#
-# addImage(list_run,megaman,0,0,61,101)
-# addImage(list_run,megaman,0,0,61,101)
-# addImage(list_run,megaman,0,0,61,101)
-# addImage(list_run,megaman,74,0,144,104)
-# addImage(list_run,megaman,74,0,144,104)
-# addImage(list_run,megaman,74,0,144,104)
-# addImage(list_run,megaman,164,0,261,104)
-# addImage(list_run,megaman,164,0,261,104)
-# addImage(list_run,megaman,164,0,261,104)
-# addImage(list_run,megaman,164,0,261,104)
-# addImage(list_run,megaman,284,0,387,104)
-# addImage(list_run,megaman,284,0,387,104)
-# addImage(list_run,megaman,284,0,387,104)
-# addImage(list_run,megaman,419,0,498,104)
-# addImage(list_run,megaman,419,0,498,104)
-# addImage(list_run,megaman,419,0,498,104)
-# addImage(list_run,megaman,515,0,582,104)
-# addImage(list_run,megaman,515,0,582,104)
-# addImage(list_run,megaman,515,0,582,104)
-# addImage(list_run,megaman,593,0,669,104)
-# addImage(list_run,megaman,593,0,669,104)
-# addImage(list_run,megaman,593,0,669,104)
-# addImage(list_run,megaman,689,0,780,104)
-# addImage(list_run,megaman,689,0,780,104)
-# addImage(list_run,megaman,689,0,780,104)
-# addImage(list_run,megaman,803,0,906,104)
-# addImage(list_run,megaman,803,0,906,104)
-# addImage(list_run,megaman,803,0,906,104)
-# addImage(list_run,megaman,926,0,1013,104)
-# addImage(list_run,megaman,926,0,1013,104)
-# addImage(list_run,megaman,926,0,1013,104)
+list_right_run = []
+list_left_run = []
 
 
-addImage(list_run,megaman,48,55,185,185)
-addImage(list_run,megaman,48,310,185,440)
-addImage(list_run,megaman,48,560,185,694)
-addImage(list_run,megaman,48,809,185,948)
-addImage(list_run,megaman,48,1067,185,1201)
-addImage(list_run,megaman,48,1326,185,1456)
-addImage(list_run,megaman,48,1580,185,1710)
-addImage(list_run,megaman,48,1830,185,1964)
-addImage(list_run,megaman,48,2080,185,2218)
-addImage(list_run,megaman,48,2337,185,2478)
+addImage(list_right_run,megaman,48,55,185,185, False)
+addImage(list_right_run,megaman,48,310,185,440, False)
+addImage(list_right_run,megaman,48,560,185,694, False)
+addImage(list_right_run,megaman,48,809,185,948, False)
+addImage(list_right_run,megaman,48,1067,185,1201, False)
+addImage(list_right_run,megaman,48,1326,185,1456, False)
+addImage(list_right_run,megaman,48,1580,185,1710, False)
+addImage(list_right_run,megaman,48,1830,185,1964, False)
+addImage(list_right_run,megaman,48,2080,185,2218, False)
+addImage(list_right_run,megaman,48,2337,185,2478, False)
 
 
+addImage(list_left_run, megaman, 48, 2337,185,2478, True)
+addImage(list_left_run, megaman, 48, 2080,185,2218, True)
+addImage(list_left_run, megaman, 48, 1830,185,1964, True)
+addImage(list_left_run, megaman, 48, 1580,185,1710, True)
+addImage(list_left_run, megaman, 48, 1326,185,1456, True)
+addImage(list_left_run, megaman, 48, 1067,185,1201, True)
+addImage(list_left_run, megaman, 48, 809,185,948, True)
+addImage(list_left_run, megaman, 48, 560,185,694, True)
+addImage(list_left_run, megaman, 48, 310,185,440, True)
+addImage(list_left_run, megaman, 48, 55,185,185, True)
+
+
+
+
+
+
+speed = 12
 reloj = pygame.time.Clock()
 
 i=0
 delta = 0.4 #len(list_run)/FPS
 print(delta)
+direccion = 1
 # -------- Bucle principal del Programa -----------
 while not hecho:
     # --- Bucle principal de eventos
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             hecho = True
+        elif evento.type == pygame.KEYDOWN:
+            lista = pygame.key.get_pressed()
+            if lista[pygame.K_LEFT]==1:
+                direccion = -1
+            if lista[pygame.K_RIGHT] == 1:
+                direccion = 1
 
     # --- LA LÓGICA DEL JUEGO DEBERÍA IR AQUÍ
 
@@ -116,10 +103,13 @@ while not hecho:
     # de esto, de otra forma serán borrados por este comando:
 
     pantalla.fill(BLANCO)
-    index = int(i)%len(list_run)
-    pantalla.blit(list_run[index], (i*8, 0))
+    index = int(i)%len(list_left_run)
+    if direccion == 1:
+        pantalla.blit(list_right_run[index], (i*speed, 150))
+    else:
+        pantalla.blit(list_left_run[index], (i *speed , 150))
     # pantalla.blit(list_run[6], (0, 0))
-    i+=delta
+    i+=delta*direccion
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
     pygame.display.flip()
 
