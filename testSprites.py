@@ -40,7 +40,7 @@ hecho = False
 
 # Se usa para establecer cuan rápido se actualiza la pantalla
 
-megaman = pygame.image.load("sprites runs.png").convert_alpha()
+megaman = pygame.image.load("descarga.png").convert_alpha()
 list_run = []
 
 # addImage(list_run,megaman,344,427,424,564)
@@ -84,22 +84,22 @@ list_run = []
 # addImage(list_run,megaman,926,0,1013,104)
 
 
-addImage(list_run,megaman,0,0,61,101)
-addImage(list_run,megaman,74,0,144,104)
-addImage(list_run,megaman,164,0,261,104)
-addImage(list_run,megaman,284,0,387,104)
-addImage(list_run,megaman,419,0,498,104)
-addImage(list_run,megaman,515,0,582,104)
-addImage(list_run,megaman,593,0,669,104)
-addImage(list_run,megaman,689,0,780,104)
-addImage(list_run,megaman,803,0,906,104)
-addImage(list_run,megaman,926,0,1013,104)
+addImage(list_run,megaman,48,55,185,185)
+addImage(list_run,megaman,48,310,185,440)
+addImage(list_run,megaman,48,560,185,694)
+addImage(list_run,megaman,48,809,185,948)
+addImage(list_run,megaman,48,1067,185,1201)
+addImage(list_run,megaman,48,1326,185,1456)
+addImage(list_run,megaman,48,1580,185,1710)
+addImage(list_run,megaman,48,1830,185,1964)
+addImage(list_run,megaman,48,2080,185,2218)
+addImage(list_run,megaman,48,2337,185,2478)
 
 
 reloj = pygame.time.Clock()
 
 i=0
-delta =  2*len(list_run)/ FPS
+delta = 0.4 #len(list_run)/FPS
 print(delta)
 # -------- Bucle principal del Programa -----------
 while not hecho:
@@ -117,7 +117,7 @@ while not hecho:
 
     pantalla.fill(BLANCO)
     index = int(i)%len(list_run)
-    pantalla.blit(list_run[index], (0, 0))
+    pantalla.blit(list_run[index], (i*8, 0))
     # pantalla.blit(list_run[6], (0, 0))
     i+=delta
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
