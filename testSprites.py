@@ -10,6 +10,8 @@
 """
 
 import pygame
+from pip._vendor.distlib.util import parse_name_and_version
+
 
 def addImage(lista,imagen,x1, y1,x2,y2,invert):
     img1 = pygame.Surface((x2-x1+1, y2-y1+1))
@@ -18,6 +20,8 @@ def addImage(lista,imagen,x1, y1,x2,y2,invert):
     img1 = img1.convert_alpha()
     if invert:
         img1 = pygame.transform.flip(img1, True, False)
+
+    img1 = pygame.transform.scale(img1,(img1.get_width()*2, img1.get_height()*2))
     lista.append(img1)
 
 
@@ -42,46 +46,53 @@ hecho = False
 
 # Se usa para esta blecer cuan rápido se actualiza la pantalla
 
-megaman = pygame.image.load("descarga.png").convert_alpha()
+megaman = pygame.image.load("Megaman\sprites megaman.png").convert_alpha()
+fondo = pygame.image.load("fondo.png")
 list_right_run = []
 list_left_run = []
 
 
-addImage(list_right_run,megaman,48,55,185,185, False)
-addImage(list_right_run,megaman,48,310,185,440, False)
-addImage(list_right_run,megaman,48,560,185,694, False)
-addImage(list_right_run,megaman,48,809,185,948, False)
-addImage(list_right_run,megaman,48,1067,185,1201, False)
-addImage(list_right_run,megaman,48,1326,185,1456, False)
-addImage(list_right_run,megaman,48,1580,185,1710, False)
-addImage(list_right_run,megaman,48,1830,185,1964, False)
-addImage(list_right_run,megaman,48,2080,185,2218, False)
-addImage(list_right_run,megaman,48,2337,185,2478, False)
+# addImage(list_right_run,megaman,2,19,25,41, True)
+addImage(list_right_run,megaman,81,19,104,41, True)
+addImage(list_right_run,megaman,111,18,126,41, True)
+addImage(list_right_run,megaman,135,20,155,41, True)
+# addImage(list_right_run,megaman,48,1067,185,1201, False)
+# addImage(list_right_run,megaman,48,1326,185,1456, False)
+# addImage(list_right_run,megaman,48,1580,185,1710, False)
+# addImage(list_right_run,megaman,48,1830,185,1964, False)
+# addImage(list_right_run,megaman,48,2080,185,2218, False)
+# addImage(list_right_run,megaman,48,2337,185,2478, False)
+
+# addImage(list_left_run,megaman,2,19,25,41, False)
+addImage(list_left_run,megaman,82,19,104,41, False)
+addImage(list_left_run,megaman,111,18,126,41, False)
+addImage(list_left_run,megaman,135,20,155,41, False)
+
+# addImage(list_left_run, megaman, 48, 2337,185,2478, True)
+# addImage(list_left_run, megaman, 48, 2080,185,2218, True)
+# addImage(list_left_run, megaman, 48, 1830,185,1964, True)
+# addImage(list_left_run, megaman, 48, 1580,185,1710, True)
+# addImage(list_left_run, megaman, 48, 1326,185,1456, True)
+# addImage(list_left_run, megaman, 48, 1067,185,1201, True)
+# addImage(list_left_run, megaman, 48, 809,185,948, True)
+# addImage(list_left_run, megaman, 48, 560,185,694, True)
+# addImage(list_left_run, megaman, 48, 310,185,440, True)
+# addImage(list_left_run, megaman, 48, 55,185,185, True)
 
 
-addImage(list_left_run, megaman, 48, 2337,185,2478, True)
-addImage(list_left_run, megaman, 48, 2080,185,2218, True)
-addImage(list_left_run, megaman, 48, 1830,185,1964, True)
-addImage(list_left_run, megaman, 48, 1580,185,1710, True)
-addImage(list_left_run, megaman, 48, 1326,185,1456, True)
-addImage(list_left_run, megaman, 48, 1067,185,1201, True)
-addImage(list_left_run, megaman, 48, 809,185,948, True)
-addImage(list_left_run, megaman, 48, 560,185,694, True)
-addImage(list_left_run, megaman, 48, 310,185,440, True)
-addImage(list_left_run, megaman, 48, 55,185,185, True)
 
 
 
 
-
-
-speed = 12
+speed = 10
 reloj = pygame.time.Clock()
 
 i=0
-delta = 0.4 #len(list_run)/FPS
+delta = 0.2 #len(list_run)/FPS
 print(delta)
 direccion = 1
+index = 0
+pygame.key.set_repeat(1,1)
 # -------- Bucle principal del Programa -----------
 while not hecho:
     # --- Bucle principal de eventos
@@ -91,8 +102,12 @@ while not hecho:
         elif evento.type == pygame.KEYDOWN:
             lista = pygame.key.get_pressed()
             if lista[pygame.K_LEFT]==1:
+                index = int(i) % len(list_left_run)
+                i -= delta
                 direccion = -1
             if lista[pygame.K_RIGHT] == 1:
+                index = int(i) % len(list_left_run)
+                i += delta
                 direccion = 1
 
     # --- LA LÓGICA DEL JUEGO DEBERÍA IR AQUÍ
@@ -103,13 +118,14 @@ while not hecho:
     # de esto, de otra forma serán borrados por este comando:
 
     pantalla.fill(BLANCO)
-    index = int(i)%len(list_left_run)
+    pantalla.blit(fondo,(0,0))
+    # index = int(i)%len(list_left_run)
     if direccion == 1:
         pantalla.blit(list_right_run[index], (i*speed, 150))
     else:
         pantalla.blit(list_left_run[index], (i *speed , 150))
     # pantalla.blit(list_run[6], (0, 0))
-    i+=delta*direccion
+
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
     pygame.display.flip()
 
