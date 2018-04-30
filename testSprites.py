@@ -46,51 +46,43 @@ hecho = False
 
 # Se usa para esta blecer cuan rápido se actualiza la pantalla
 
-megaman = pygame.image.load("Megaman\sprites megaman.png").convert_alpha()
+megaman = pygame.image.load("Megaman/sprites megaman.png").convert_alpha()
 fondo = pygame.image.load("fondo.png")
 list_right_run = []
 list_left_run = []
+list_jump_right = []
+list_jump_left = []
+
 
 
 # addImage(list_right_run,megaman,2,19,25,41, True)
-addImage(list_right_run,megaman,81,19,104,41, True)
-addImage(list_right_run,megaman,111,18,126,41, True)
-addImage(list_right_run,megaman,135,20,155,41, True)
-# addImage(list_right_run,megaman,48,1067,185,1201, False)
-# addImage(list_right_run,megaman,48,1326,185,1456, False)
-# addImage(list_right_run,megaman,48,1580,185,1710, False)
-# addImage(list_right_run,megaman,48,1830,185,1964, False)
-# addImage(list_right_run,megaman,48,2080,185,2218, False)
-# addImage(list_right_run,megaman,48,2337,185,2478, False)
+addImage(list_right_run,megaman,81,18,104,41, True)
+addImage(list_right_run,megaman,107,18,130,41, True)
+addImage(list_right_run,megaman,135,18,158,41, True)
+addImage(list_right_run,megaman,107,18,130,41, True)
 
-# addImage(list_left_run,megaman,2,19,25,41, False)
-addImage(list_left_run,megaman,82,19,104,41, False)
-addImage(list_left_run,megaman,111,18,126,41, False)
-addImage(list_left_run,megaman,135,20,155,41, False)
+addImage(list_left_run,megaman,81,18,104,41, False)
+addImage(list_left_run,megaman,107,18,130,41, False)
+addImage(list_left_run,megaman,135,18,158,41, False)
+addImage(list_left_run,megaman,107,18,130,41, False)
 
-# addImage(list_left_run, megaman, 48, 2337,185,2478, True)
-# addImage(list_left_run, megaman, 48, 2080,185,2218, True)
-# addImage(list_left_run, megaman, 48, 1830,185,1964, True)
-# addImage(list_left_run, megaman, 48, 1580,185,1710, True)
-# addImage(list_left_run, megaman, 48, 1326,185,1456, True)
-# addImage(list_left_run, megaman, 48, 1067,185,1201, True)
-# addImage(list_left_run, megaman, 48, 809,185,948, True)
-# addImage(list_left_run, megaman, 48, 560,185,694, True)
-# addImage(list_left_run, megaman, 48, 310,185,440, True)
-# addImage(list_left_run, megaman, 48, 55,185,185, True)
+addImage(list_jump_right,megaman,195,10,221,40, True)
+addImage(list_jump_left,megaman,195,10,221,40, False)
 
 
 
 
 
 
-speed = 10
+speed =12
 reloj = pygame.time.Clock()
 
 i=0
-delta = 0.2 #len(list_run)/FPS
+delta = 0.15 #len(list_run)/FPS
 print(delta)
 direccion = 1
+estado = 0 #0=corriendo o parado 1=saltando
+porcenta_salto = 0
 index = 0
 pygame.key.set_repeat(1,1)
 # -------- Bucle principal del Programa -----------
@@ -109,6 +101,14 @@ while not hecho:
                 index = int(i) % len(list_left_run)
                 i += delta
                 direccion = 1
+            if lista[pygame.K_a]==1:
+                estado=1
+                porcenta_salto +=0.1
+        elif evento.type == pygame.KEYUP:
+            lista = pygame.key.get_pressed()
+            if lista[pygame.K_a]==0 and estado == 1:
+                porcenta_salto -= 0.1
+
 
     # --- LA LÓGICA DEL JUEGO DEBERÍA IR AQUÍ
 
@@ -120,10 +120,15 @@ while not hecho:
     pantalla.fill(BLANCO)
     pantalla.blit(fondo,(0,0))
     # index = int(i)%len(list_left_run)
-    if direccion == 1:
+    if direccion == 1 and estado == 0:
         pantalla.blit(list_right_run[index], (i*speed, 150))
-    else:
+    elif direccion == 0 and estado == 0:
         pantalla.blit(list_left_run[index], (i *speed , 150))
+    elif direccion == 1 and estado == 1:
+        pantalla.blit(list_jump_right[0], (i * speed, 150))
+    elif direccion == 0 and estado == 1:
+        pantalla.blit(list_jump_left[0], (i * speed, 150))
+
     # pantalla.blit(list_run[6], (0, 0))
 
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
