@@ -11,7 +11,7 @@
 
 import pygame
 from pip._vendor.distlib.util import parse_name_and_version
-
+import math
 
 def addImage(lista,imagen,x1, y1,x2,y2,invert):
     img1 = pygame.Surface((x2-x1+1, y2-y1+1))
@@ -52,8 +52,11 @@ list_right_run = []
 list_left_run = []
 list_jump_right = []
 list_jump_left = []
-
-
+porcentaje_salto = []
+for x in range(0,90,5):
+    porcentaje_salto.append(math.sin(math.radians(x)))
+    print(math.sin(math.radians(x)))
+print(len(porcentaje_salto))
 
 # addImage(list_right_run,megaman,2,19,25,41, True)
 addImage(list_right_run,megaman,81,18,104,41, True)
@@ -82,7 +85,7 @@ delta = 0.15 #len(list_run)/FPS
 print(delta)
 direccion = 1
 estado = 0 #0=corriendo o parado 1=saltando
-porcenta_salto = 0
+index_porcentaje_salto = 0
 index = 0
 pygame.key.set_repeat(1,1)
 # -------- Bucle principal del Programa -----------
@@ -91,23 +94,39 @@ while not hecho:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             hecho = True
-        elif evento.type == pygame.KEYDOWN:
-            lista = pygame.key.get_pressed()
-            if lista[pygame.K_LEFT]==1:
-                index = int(i) % len(list_left_run)
-                i -= delta
-                direccion = -1
-            if lista[pygame.K_RIGHT] == 1:
-                index = int(i) % len(list_left_run)
-                i += delta
-                direccion = 1
-            if lista[pygame.K_a]==1:
-                estado=1
-                porcenta_salto +=0.1
-        elif evento.type == pygame.KEYUP:
-            lista = pygame.key.get_pressed()
-            if lista[pygame.K_a]==0 and estado == 1:
-                porcenta_salto -= 0.1
+        # elif evento.type == pygame.KEYDOWN or evento.type == pygame.KEYUP:
+        #     print("presionada o liberada")
+    lista = pygame.key.get_pressed()
+    if lista[pygame.K_LEFT]==1:
+        index = int(i) % len(list_left_run)
+        i -= delta
+        direccion = -1
+
+    if lista[pygame.K_RIGHT] == 1:
+        index = int(i) % len(list_left_run)
+        i += delta
+        direccion = 1
+    if lista[pygame.K_a]==1:
+        if estado == 0:
+            estado=1
+            index_porcentaje_salto += 1
+        elif estado == 1 and index_porcentaje_salto<16:
+            index_porcentaje_salto +=1
+        elif estado == 1 and index_porcentaje_salto>=16:
+            estado = 2
+            index_porcentaje_salto -= 1
+        elif estado == 2 and index_porcentaje_salto > 0:
+            index_porcentaje_salto -= 1
+        elif estado == 2 and index_porcentaje_salto == 0:
+            index = 0
+            estado = 0
+        print("index: {} estado {} pos salto {}".format(index_porcentaje_salto,estado,150-(80* porcentaje_salto[index_porcentaje_salto])))
+
+    if lista[pygame.K_a]==0 and estado in[1,2]:
+        if index_porcentaje_salto >0:
+            index_porcentaje_salto -= 1
+        elif index_porcentaje_salto == 0:
+            estado = 0
 
 
     # --- LA LÓGICA DEL JUEGO DEBERÍA IR AQUÍ
@@ -117,17 +136,17 @@ while not hecho:
     # Primero, limpia la pantalla con blanco. No vayas a poner otros comandos de dibujo encima 
     # de esto, de otra forma serán borrados por este comando:
 
-    pantalla.fill(BLANCO)
+    # pantalla.fill(BLANCO)
     pantalla.blit(fondo,(0,0))
     # index = int(i)%len(list_left_run)
     if direccion == 1 and estado == 0:
         pantalla.blit(list_right_run[index], (i*speed, 150))
-    elif direccion == 0 and estado == 0:
+    elif direccion == -1 and estado == 0:
         pantalla.blit(list_left_run[index], (i *speed , 150))
-    elif direccion == 1 and estado == 1:
-        pantalla.blit(list_jump_right[0], (i * speed, 150))
-    elif direccion == 0 and estado == 1:
-        pantalla.blit(list_jump_left[0], (i * speed, 150))
+    elif direccion == 1 and estado in[1,2]:
+        pantalla.blit(list_jump_right[0], (i * speed, 150-(80* porcentaje_salto[index_porcentaje_salto])))
+    elif direccion == -1 and estado in[1,2]:
+        pantalla.blit(list_jump_left[0], (i * speed, 150-(80*porcentaje_salto[index_porcentaje_salto])))
 
     # pantalla.blit(list_run[6], (0, 0))
 
