@@ -39,6 +39,9 @@ STATE_SALTANDO_UP = 2
 STATE_SALTANDO_DOWN = 3
 DIRECCION_IZQUIERDA = -1
 DIRECCION_DERECHA = 1
+FRAMES_PARPADEO = 15
+FRAMES_OJOS_ABIERTO = 45
+
 
 
 FPS = 60
@@ -63,6 +66,7 @@ list_right_run = []
 list_left_run = []
 list_jump_right = []
 list_jump_left = []
+timer_parpadeo = 0
 porcentaje_salto = []
 for x in range(0,90,4):
     porcentaje_salto.append(math.sin(math.radians(x)))
@@ -70,13 +74,13 @@ for x in range(0,90,4):
 longitud_lista_porcentaje =len(porcentaje_salto)-2
 print(len(porcentaje_salto))
 
-addImage(list_left_stand, megaman,4,19,23,41,True)
-addImage(list_left_stand, megaman,29,19,48,41,True)
-addImage(list_left_stand, megaman,54,19,73,41,True)
+addImage(list_right_stand, megaman,4,19,23,41,True)
+addImage(list_right_stand, megaman,29,19,48,41,True)
+addImage(list_right_stand, megaman,54,19,73,41,True)
 
-addImage(list_right_stand, megaman,4,19,23,41,False)
-addImage(list_right_stand, megaman,29,19,48,41,False)
-addImage(list_right_stand, megaman,54,19,73,41,False)
+addImage(list_left_stand, megaman,4,19,23,41,False)
+addImage(list_left_stand, megaman,29,19,48,41,False)
+addImage(list_left_stand, megaman,54,19,73,41,False)
 
 # addImage(list_right_run,megaman,2,19,25,41, True)
 addImage(list_right_run ,megaman,81,18,104,41, True)
@@ -106,6 +110,7 @@ print(delta)
 direccion = 1
 estado = 0 #0=corriendo o parado 1=saltando
 index_porcentaje_salto = 0
+index_parado = 0
 index = 0
 pygame.key.set_repeat(1,1)
 # -------- Bucle principal del Programa -----------
@@ -121,16 +126,34 @@ while not hecho:
         index = int(i) % len(list_left_run)
         i -= delta
         direccion = DIRECCION_IZQUIERDA
-        estado = STATE_CORRIENDO
+        if estado == STATE_PARADO:
+            estado = STATE_CORRIENDO
 
-    if lista[pygame.K_RIGHT] == 1:
-        index = int(i) % len(list_left_run)
+
+    if lista[pygame.K_RIGHT] ==1:
+        index = int(i) % len(list_right_run)
         i += delta
         direccion = DIRECCION_DERECHA
-    if lista[pygame.K_RIGHT] == 0:
+        if estado == STATE_PARADO:
+            estado = STATE_CORRIENDO
+
+    if lista[pygame.K_RIGHT] == 0 and lista[pygame.K_LEFT] == 0 and estado == STATE_CORRIENDO:
         estado =STATE_PARADO
+        timer_parpadeo = 0
+
+    if estado == STATE_PARADO and index_parado == 0 and timer_parpadeo <= FRAMES_OJOS_ABIERTO:
+        timer_parpadeo += 1
+    if estado == STATE_PARADO and index_parado == 1 and timer_parpadeo <= FRAMES_PARPADEO:
+        timer_parpadeo += 1
+    if estado == STATE_PARADO and index_parado == 0 and timer_parpadeo == FRAMES_OJOS_ABIERTO:
+        index_parado = 1
+        timer_parpadeo = 0
+    if estado == STATE_PARADO and index_parado == 1 and timer_parpadeo == FRAMES_PARPADEO:
+        index_parado = 0
+        timer_parpadeo = 0
+
     if lista[pygame.K_a]==1:
-        if estado == 0:
+        if estado == STATE_CORRIENDO or estado == STATE_PARADO:
             estado=STATE_SALTANDO_UP
             index_porcentaje_salto += 1
         elif estado == STATE_SALTANDO_UP and index_porcentaje_salto<longitud_lista_porcentaje:
@@ -143,15 +166,16 @@ while not hecho:
         elif estado == STATE_SALTANDO_DOWN and index_porcentaje_salto == 0:
             index = 0
             estado = STATE_PARADO
-        # print("index: {} estado {} pos salto {}".format(index_porcentaje_salto,estado,150-(80* porcentaje_salto[index_porcentaje_salto])))
-
-    if lista[pygame.K_a]==0 and estado in[1,2]:
+    elif lista[pygame.K_a]==0 and estado in [STATE_SALTANDO_DOWN, STATE_SALTANDO_UP]:
+        print("index salto: {} stado {}".format(index_porcentaje_salto, estado))
         if index_porcentaje_salto >0:
             index_porcentaje_salto -= 1
-            estado = STATE_SALTANDO_DOWN
+            estado = 3
         elif index_porcentaje_salto == 0:
             estado = STATE_PARADO
-
+    print("tecla A {} estado {} porcentaje {}".format(lista[pygame.K_a], estado,index_porcentaje_salto))
+    # print("index: {} estado {} direccion {} pos salto {}".format(index_porcentaje_salto, estado, direccion,
+    #                                                 150 - (110 * porcentaje_salto[index_porcentaje_salto])))
 
     # --- LA LÓGICA DEL JUEGO DEBERÍA IR AQUÍ
 
@@ -170,12 +194,10 @@ while not hecho:
         pantalla.blit(list_jump_right[0], (i * speed, 150-(110* porcentaje_salto[index_porcentaje_salto])))
     elif direccion == DIRECCION_IZQUIERDA and estado in[STATE_SALTANDO_UP,STATE_SALTANDO_DOWN]:
         pantalla.blit(list_jump_left[0], (i * speed, 150-(110*porcentaje_salto[index_porcentaje_salto])))
-    elif direccion == DIRECCION_IZQUIERDA and estado in[STATE_PARADO]:
-        pantalla.blit(list_left_stand[0], (i , 150))
     elif direccion == DIRECCION_DERECHA and estado ==STATE_PARADO:
-        pantalla.blit(list_right_stand[0], (i , 150))
+        pantalla.blit(list_right_stand[index_parado], (i * speed, 150))
     elif direccion == DIRECCION_IZQUIERDA and estado ==STATE_PARADO:
-        pantalla.blit(list_left_stand[0], (i , 150))
+        pantalla.blit(list_left_stand[index_parado], (i * speed, 150))
     # pantalla.blit(list_run[6], (0, 0))
 
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
