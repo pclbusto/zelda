@@ -13,16 +13,6 @@ import pygame
 from pip._vendor.distlib.util import parse_name_and_version
 import math
 
-def addImage(lista,imagen,x1, y1,x2,y2,invert):
-    img1 = pygame.Surface((x2-x1+1, y2-y1+1))
-    img1.blit(imagen, (0, 0), (x1, y1, x2-x1+1, y2-y1+1))
-    img1.set_colorkey((0, 255, 0))
-    img1 = img1.convert_alpha()
-    if invert:
-        img1 = pygame.transform.flip(img1, True, False)
-
-    img1 = pygame.transform.scale(img1,(img1.get_width()*2, img1.get_height()*2))
-    lista.append(img1)
 
 
 # Definimos algunos colores
@@ -33,6 +23,7 @@ ROJO = (255, 0, 0)
 AZUL = (0, 0, 255)
 VIOLETA = (98, 0, 255)
 
+FACTOR_SCALADO = 2
 STATE_PARADO = 0
 STATE_CORRIENDO = 1
 STATE_SALTANDO_UP = 2
@@ -41,12 +32,26 @@ DIRECCION_IZQUIERDA = -1
 DIRECCION_DERECHA = 1
 FRAMES_PARPADEO = 15
 FRAMES_OJOS_ABIERTO = 45
-VEL_CORRER_X = 1.9
-VEL_SALTO_X = 1.312
-VEL_SALTO_Y = 4.87
-DESACEL_Y = 0.25
+VEL_CORRER_X = 1.375 * FACTOR_SCALADO
+VEL_SALTO_X = 1.312 * FACTOR_SCALADO
+VEL_SALTO_Y = 4.87 * FACTOR_SCALADO
+DESACEL_Y = 0.25 * FACTOR_SCALADO
 LIM_MENOR_ACEL_Y = -12
-LIM_MEN_SALTO = 1.183
+LIM_MEN_SALTO = 1.183 * FACTOR_SCALADO
+
+
+def addImage(lista,imagen,x1, y1,x2,y2,invert):
+    img1 = pygame.Surface((x2-x1+1, y2-y1+1))
+    img1.blit(imagen, (0, 0), (x1, y1, x2-x1+1, y2-y1+1))
+    img1.set_colorkey((0, 255, 0))
+    img1 = img1.convert_alpha()
+    if invert:
+        img1 = pygame.transform.flip(img1, True, False)
+
+    img1 = pygame.transform.scale(img1,(img1.get_width()*FACTOR_SCALADO, img1.get_height()*FACTOR_SCALADO))
+    lista.append(img1)
+
+
 
 
 FPS = 60
@@ -72,7 +77,7 @@ list_left_run = []
 list_jump_right = []
 list_jump_left = []
 timer_parpadeo = 0
-porcentaje_salto = []
+vel_salto = VEL_SALTO_Y
 # for x in range(0,90,4):
 #     porcentaje_salto.append(math.sin(math.radians(x)))
 #     print(math.sin(math.radians(x)))
@@ -110,8 +115,6 @@ addImage(list_jump_left,megaman,195,10,221,40, False)
 
 
 
-vel_correr =1.375
-vel_salto = 4.87
 reloj = pygame.time.Clock()
 
 x = 0
@@ -169,9 +172,9 @@ while not hecho:
     if lista[pygame.K_a] == 1:
         if estado == STATE_CORRIENDO or estado == STATE_PARADO:
             estado=STATE_SALTANDO_UP
-            y += vel_salto
+            y += VEL_SALTO_Y
         elif estado == STATE_SALTANDO_UP and index_porcentaje_salto<longitud_lista_porcentaje:
-            index_porcentaje_salto +=1
+            y += VEL_SALTO_Y
         elif estado == STATE_SALTANDO_UP and index_porcentaje_salto>=longitud_lista_porcentaje:
             estado = STATE_SALTANDO_DOWN
             index_porcentaje_salto -= 1
