@@ -38,6 +38,8 @@ VEL_SALTO_Y = 4.87 * FACTOR_SCALADO
 DESACEL_Y = 0.25 * FACTOR_SCALADO
 LIM_MENOR_ACEL_Y = -12
 LIM_MEN_SALTO = 1.183 * FACTOR_SCALADO
+LIM_ACEL_SIN_SALTO_PRECIONADO = 2.12
+
 
 
 def addImage(lista,imagen,x1, y1,x2,y2,invert):
@@ -81,12 +83,10 @@ vel_salto = VEL_SALTO_Y
 # for x in range(0,90,4):
 #     porcentaje_salto.append(math.sin(math.radians(x)))
 #     print(math.sin(math.radians(x)))
-for x in range(0,60,1):
-    porcentaje_salto.append(4.75*x)
-    print(math.sin(math.radians(x)))
+# for x in range(0,60,1):
+#     porcentaje_salto.append(4.75*x)
+#     print(math.sin(math.radians(x)))
 
-longitud_lista_porcentaje =len(porcentaje_salto)-2
-print(len(porcentaje_salto))
 
 addImage(list_right_stand, megaman,4,19,23,41,True)
 addImage(list_right_stand, megaman,29,19,48,41,True)
@@ -171,25 +171,18 @@ while not hecho:
 
     if lista[pygame.K_a] == 1:
         if estado == STATE_CORRIENDO or estado == STATE_PARADO:
-            estado=STATE_SALTANDO_UP
-            y += VEL_SALTO_Y
-        elif estado == STATE_SALTANDO_UP and index_porcentaje_salto<longitud_lista_porcentaje:
-            y += VEL_SALTO_Y
-        elif estado == STATE_SALTANDO_UP and index_porcentaje_salto>=longitud_lista_porcentaje:
-            estado = STATE_SALTANDO_DOWN
-            index_porcentaje_salto -= 1
-        elif estado == STATE_SALTANDO_DOWN and index_porcentaje_salto > 0:
-            index_porcentaje_salto -= 1
-        elif estado == STATE_SALTANDO_DOWN and index_porcentaje_salto == 0:
-            index = 0
-            estado = STATE_PARADO
+            estado = STATE_SALTANDO_UP
+            y -= vel_salto
+            vel_salto -= DESACEL_Y
+        elif estado == STATE_SALTANDO_UP:
+            y -= vel_salto
+            vel_salto -= DESACEL_Y
+
     elif lista[pygame.K_a]==0 and estado in [STATE_SALTANDO_DOWN, STATE_SALTANDO_UP]:
         # print("index salto: {} stado {}".format(index_porcentaje_salto, estado))
-        if index_porcentaje_salto >0:
-            index_porcentaje_salto -= 1
-            estado = 3
-        elif index_porcentaje_salto == 0:
-            estado = STATE_PARADO
+        if vel_salto >=LIM_ACEL_SIN_SALTO_PRECIONADO:
+            vel_salto = 1
+
     # print("tecla A {} estado {} porcentaje {}".format(lista[pygame.K_a], estado,index_porcentaje_salto))
     # print("index: {} estado {} direccion {} pos salto {}".format(index_porcentaje_salto, estado, direccion,
     #                                                 150 - (110 * porcentaje_salto[index_porcentaje_salto])))
@@ -204,17 +197,17 @@ while not hecho:
     # pantalla.blit(fondo,(0,0))
     # index = int(i)%len(list_left_run)
     if direccion == DIRECCION_DERECHA and estado == STATE_CORRIENDO:
-        pantalla.blit(list_right_run[index_frame_corriendo], (x, 150))
+        pantalla.blit(list_right_run[index_frame_corriendo], (x, y))
     elif direccion == DIRECCION_IZQUIERDA and estado == STATE_CORRIENDO:
-        pantalla.blit(list_left_run[index_frame_corriendo], (x , 150))
+        pantalla.blit(list_left_run[index_frame_corriendo], (x , y))
     elif direccion == DIRECCION_DERECHA and estado in[STATE_SALTANDO_UP,STATE_SALTANDO_DOWN]:
-        pantalla.blit(list_jump_right[0], (i * speed, 150-(110* porcentaje_salto[index_porcentaje_salto])))
+        pantalla.blit(list_jump_right[0], (x, y))
     elif direccion == DIRECCION_IZQUIERDA and estado in[STATE_SALTANDO_UP,STATE_SALTANDO_DOWN]:
-        pantalla.blit(list_jump_left[0], (i * speed, 150-(110*porcentaje_salto[index_porcentaje_salto])))
+        pantalla.blit(list_jump_left[0], (x, y))
     elif direccion == DIRECCION_DERECHA and estado ==STATE_PARADO:
-        pantalla.blit(list_right_stand[index_parado], (x, 150))
+        pantalla.blit(list_right_stand[index_parado], (x, y))
     elif direccion == DIRECCION_IZQUIERDA and estado ==STATE_PARADO:
-        pantalla.blit(list_left_stand[index_parado], (x, 150))
+        pantalla.blit(list_left_stand[index_parado], (x, y))
     # pantalla.blit(list_run[6], (0, 0))
 
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
