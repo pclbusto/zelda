@@ -32,7 +32,7 @@ DIRECCION_IZQUIERDA = -1
 DIRECCION_DERECHA = 1
 FRAMES_PARPADEO = 15
 FRAMES_OJOS_ABIERTO = 45
-VEL_CORRER_X = 1.375 * FACTOR_SCALADO
+VEL_CORRER_X = 1.675 * FACTOR_SCALADO
 VEL_SALTO_X = 1.312 * FACTOR_SCALADO
 VEL_SALTO_Y = 4.87 * FACTOR_SCALADO
 DESACEL_Y = 0.25 * FACTOR_SCALADO
@@ -70,7 +70,7 @@ hecho = False
 
 # Se usa para esta blecer cuan rápido se actualiza la pantalla
 
-megaman = pygame.image.load("Megaman/sprites megaman.png").convert_alpha()
+megaman = pygame.image.load("Megaman/sprites battletoad.png").convert_alpha()
 # fondo = pygame.image.load("fondo.png")
 list_right_stand = []
 list_left_stand = []
@@ -88,27 +88,42 @@ vel_salto = VEL_SALTO_Y
 #     print(math.sin(math.radians(x)))
 
 
-addImage(list_right_stand, megaman,4,19,23,41,True)
-addImage(list_right_stand, megaman,29,19,48,41,True)
-addImage(list_right_stand, megaman,54,19,73,41,True)
+addImage(list_right_stand, megaman, 440, 0, 490, 71, False)
+addImage(list_right_stand, megaman, 506, 0, 555, 71, False)
+addImage(list_left_stand, megaman, 440, 0, 490, 71, True)
+addImage(list_left_stand, megaman, 506, 0, 555, 71, True)
+# addImage(list_right_stand, megaman,54,19,73,41,True)
 
-addImage(list_left_stand, megaman,4,19,23,41,False)
-addImage(list_left_stand, megaman,29,19,48,41,False)
-addImage(list_left_stand, megaman,54,19,73,41,False)
+# addImage(list_left_stand, megaman,4,19,23,41,False)
+# addImage(list_left_stand, megaman,29,19,48,41,False)
+# addImage(list_left_stand, megaman,54,19,73,41,False)
 
 # addImage(list_right_run,megaman,2,19,25,41, True)
-addImage(list_right_run ,megaman,81,18,104,41, True)
-addImage(list_right_run,megaman,107,18,130,41, True)
-addImage(list_right_run,megaman,135,18,158,41, True)
-addImage(list_right_run,megaman,107,18,130,41, True)
+# addImage(list_right_run ,megaman,81,18,104,41, True)
+# addImage(list_right_run,megaman,107,18,130,41, True)
+# addImage(list_right_run,megaman,135,18,158,41, True)
+# addImage(list_right_run,megaman,107,18,130,41, True)
 
-addImage(list_left_run,megaman,81,18,104,41, False)
-addImage(list_left_run,megaman,107,18,130,41, False)
-addImage(list_left_run,megaman,135,18,158,41, False)
-addImage(list_left_run,megaman,107,18,130,41, False)
+addImage(list_right_run ,megaman,0,0,52,71, False)
+addImage(list_right_run,megaman, 60,0,108,71, False)
+addImage(list_right_run,megaman,123,0,189,71, False)
+addImage(list_right_run,megaman,197,0,239,71, False)
+addImage(list_right_run,megaman,246,0,314,71, False)
 
-addImage(list_jump_right,megaman,195,10,221,40, True)
-addImage(list_jump_left,megaman,195,10,221,40, False)
+
+addImage(list_left_run ,megaman,0,0,52,71, True)
+addImage(list_left_run,megaman,60,0,108,71, True)
+addImage(list_left_run,megaman,123,0,189,71, True)
+addImage(list_left_run,megaman,197,0,239,71, True)
+addImage(list_right_run,megaman,246,0,314,71, True)
+
+# addImage(list_left_run,megaman,81,18,104,41, False)
+# addImage(list_left_run,megaman,107,18,130,41, False)
+# addImage(list_left_run,megaman,135,18,158,41, False)
+# addImage(list_left_run,megaman,107,18,130,41, False)
+
+# addImage(list_jump_right,megaman,195,10,221,40, True)
+# addImage(list_jump_left,megaman,195,10,221,40, False)
 
 
 
@@ -146,7 +161,7 @@ while not hecho:
             estado = STATE_CORRIENDO
 
 
-    if lista[pygame.K_RIGHT] ==1:
+    if lista[pygame.K_RIGHT] == 1:
         index_frame_corriendo = int(delta_acumulado) % len(list_left_run)
         delta_acumulado += delta
         x += VEL_CORRER_X
@@ -193,7 +208,7 @@ while not hecho:
 
     # Primero, limpia la pantalla con blanco. No vayas a poner otros comandos de dibujo encima 
     # de esto, de otra forma serán borrados por este comando:
-    pantalla.fill(NEGRO)
+    pantalla.fill(ROJO)
     # pantalla.blit(fondo,(0,0))
     # index = int(i)%len(list_left_run)
     if direccion == DIRECCION_DERECHA and estado == STATE_CORRIENDO:
