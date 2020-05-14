@@ -33,6 +33,7 @@ DIRECCION_DERECHA = 1
 FRAMES_PARPADEO = 15
 FRAMES_OJOS_ABIERTO = 45
 VEL_CORRER_X = 1.675 * FACTOR_SCALADO
+CORRIENDO = 1
 VEL_SALTO_X = 1.312 * FACTOR_SCALADO
 VEL_SALTO_Y = 4.87 * FACTOR_SCALADO
 DESACEL_Y = 0.25 * FACTOR_SCALADO
@@ -143,7 +144,13 @@ index_porcentaje_salto = 0
 index_parado = 0
 index_frame_corriendo = 0
 index = 0
-pygame.key.set_repeat(1,1)
+pygame.key.set_repeat(1, 1)
+sensibilidad_doble_presionado = 30
+cantidad_ticks_desde_posible_doble = 0
+derecha_presionada = False
+izquierda_presionada = False
+posible_doble_izquierdo = False
+posible_doble_derecho = False
 # -------- Bucle principal del Programa -----------
 while not hecho:
     # --- Bucle principal de eventos
@@ -152,22 +159,65 @@ while not hecho:
             hecho = True
 
     lista = pygame.key.get_pressed()
+    if lista[pygame.K_r] == 1:
+        CORRIENDO = 2
+        delta = 0.25
+    else:
+        CORRIENDO = 1
+        delta = 0.15
+
+    incremento = (VEL_CORRER_X * CORRIENDO)
+
     if lista[pygame.K_LEFT] == 1:
         index_frame_corriendo = int(delta_acumulado) % len(list_left_run)
         delta_acumulado -= delta
-        x -= VEL_CORRER_X
+        x -= incremento
         direccion = DIRECCION_IZQUIERDA
         if estado == STATE_PARADO:
             estado = STATE_CORRIENDO
+    #     izquierda_presionada = True
+    #     derecha_presionada = False
+    # else:
+    #     if cantidad_ticks_desde_posible_doble < sensibilidad_doble_presionado and izquierda_presionada:
+    #         izquierda_presionada = False
+    #         posible_doble_izquierdo = True
+    #     if CORRIENDO == 2 and izquierda_presionada:
+    #         CORRIENDO = 1
 
 
     if lista[pygame.K_RIGHT] == 1:
         index_frame_corriendo = int(delta_acumulado) % len(list_left_run)
         delta_acumulado += delta
-        x += VEL_CORRER_X
+        x += incremento
         direccion = DIRECCION_DERECHA
         if estado == STATE_PARADO:
             estado = STATE_CORRIENDO
+    #     derecha_presionada = True
+    #     izquierda_presionada = False
+    # else:
+    #     if cantidad_ticks_desde_posible_doble < sensibilidad_doble_presionado and derecha_presionada:
+    #         derecha_presionada = False
+    #         posible_doble_derecho = True
+    #     if CORRIENDO == 2 and derecha_presionada:
+    #         CORRIENDO = 1
+
+    # if (posible_doble_derecho or posible_doble_izquierdo) and CORRIENDO == 1:
+    #     cantidad_ticks_desde_posible_doble += 1
+    #     cantidad_ticks_desde_posible_doble %= sensibilidad_doble_presionado
+    #
+    # if not (posible_doble_derecho and ) and not posible_doble_derecho:
+    #     cantidad_ticks_desde_posible_doble = 0
+    #
+    # if cantidad_ticks_desde_posible_doble == 0:
+    #     izquierda_presionada = False
+    #     derecha_presionada = False
+    #     posible_doble_izquierdo = False
+    #     posible_doble_derecho = False
+    #
+    # if (posible_doble_derecho and derecha_presionada) or (posible_doble_izquierdo and izquierda_presionada):
+    #     CORRIENDO = 2
+
+    print("DERECHA PRESIONADA: {} Posibilidad correr derecha: {} CORRIENDO: {} incremento {}".format(derecha_presionada, posible_doble_derecho, CORRIENDO, incremento))
 
     if lista[pygame.K_RIGHT] == 0 and lista[pygame.K_LEFT] == 0 and estado == STATE_CORRIENDO:
         estado =STATE_PARADO
