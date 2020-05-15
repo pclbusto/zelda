@@ -151,24 +151,59 @@ derecha_presionada = False
 izquierda_presionada = False
 posible_doble_izquierdo = False
 posible_doble_derecho = False
+
+KEY_DERECHA = pygame.K_l
+KEY_IZQUIERDA = pygame.K_j
+
+cantidad_elementos = 0
+lista_movimientos = []
+pygame.key.set_repeat(0)
 # -------- Bucle principal del Programa -----------
 while not hecho:
     # --- Bucle principal de eventos
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             hecho = True
+        if evento.type == pygame.KEYUP:
+            CORRIENDO = 1
+            delta = 0.15
+
+        if evento.type == pygame.KEYDOWN:
+            if CORRIENDO == 1:
+                if cantidad_ticks_desde_posible_doble > sensibilidad_doble_presionado:
+                    lista_movimientos.clear()
+                    cantidad_ticks_desde_posible_doble = 0
+                lista_movimientos.append(evento.key)
+                if len(lista_movimientos) > 10:
+                    del(lista_movimientos[0])
+                if len(lista_movimientos) > 2:
+                    print(lista_movimientos[-2:-1][0],  lista_movimientos[-3:-2][0])
+                    if lista_movimientos[-2:-1][0] == lista_movimientos[-3:-2][0]:
+                        CORRIENDO = 2
+                        delta = 0.25
+
+            #print("KEYDOWN {}".format(evento.key))
+        cantidad_ticks_desde_posible_doble += 1
+
+    if CORRIENDO == 1:
+        pass
+        #print("ESTADO CAMINANDO")
+    else:
+        print("ESTADO CORRIENDO")
+
+
 
     lista = pygame.key.get_pressed()
-    if lista[pygame.K_r] == 1:
-        CORRIENDO = 2
-        delta = 0.25
-    else:
-        CORRIENDO = 1
-        delta = 0.15
+    # if lista[pygame.K_r] == 1:
+    #     CORRIENDO = 2
+    #     delta = 0.25
+    # else:
+    #     CORRIENDO = 1
+    #     delta = 0.15
 
     incremento = (VEL_CORRER_X * CORRIENDO)
 
-    if lista[pygame.K_LEFT] == 1:
+    if lista[KEY_IZQUIERDA] == 1:
         index_frame_corriendo = int(delta_acumulado) % len(list_left_run)
         delta_acumulado -= delta
         x -= incremento
@@ -185,7 +220,7 @@ while not hecho:
     #         CORRIENDO = 1
 
 
-    if lista[pygame.K_RIGHT] == 1:
+    if lista[KEY_DERECHA] == 1:
         index_frame_corriendo = int(delta_acumulado) % len(list_left_run)
         delta_acumulado += delta
         x += incremento
@@ -217,9 +252,9 @@ while not hecho:
     # if (posible_doble_derecho and derecha_presionada) or (posible_doble_izquierdo and izquierda_presionada):
     #     CORRIENDO = 2
 
-    print("DERECHA PRESIONADA: {} Posibilidad correr derecha: {} CORRIENDO: {} incremento {}".format(derecha_presionada, posible_doble_derecho, CORRIENDO, incremento))
+    #print("DERECHA PRESIONADA: {} Posibilidad correr derecha: {} CORRIENDO: {} incremento {}".format(derecha_presionada, posible_doble_derecho, CORRIENDO, incremento))
 
-    if lista[pygame.K_RIGHT] == 0 and lista[pygame.K_LEFT] == 0 and estado == STATE_CORRIENDO:
+    if lista[KEY_DERECHA] == 0 and lista[KEY_IZQUIERDA] == 0 and estado == STATE_CORRIENDO:
         estado =STATE_PARADO
         timer_parpadeo = 0
 
