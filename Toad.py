@@ -23,15 +23,17 @@ class Toad(arcade.Sprite):
         self.is_on_ladder = False
         self.cur_texture = 0
         self.scale = CHARACTER_SCALING
+        self.FRAMES_OJOS_ABIERTO = 100
+        self.FRAMES_PARPADEO = 20
+        self.index_textura_parado = 0
+        self.timer_parpadeo = 0
+
         image_source_parado = "Megaman/toad_parado_0{}.png"
         image_source_corriendo = "Megaman/toad_corriendo_0{}.png"
 
         self.texturas_parado = []
-        for i in range(1, 80):
-            idle_texture_pair = arcade.load_texture_pair(image_source_parado.format(1))
-            self.texturas_parado.append(idle_texture_pair)
-        for i in range(1, 32):
-            idle_texture_pair = arcade.load_texture_pair(image_source_parado.format(2))
+        for i in range(1, 3):
+            idle_texture_pair = arcade.load_texture_pair(image_source_parado.format(i))
             self.texturas_parado.append(idle_texture_pair)
         print(len(self.texturas_parado))
         self.texturas_corriendo = []
@@ -40,8 +42,28 @@ class Toad(arcade.Sprite):
             self.texturas_corriendo.append(running_texture_pair)
 
     def update(self):
-        self.cur_texture += 1
-        self.cur_texture %= 54*2
-        print(self.cur_texture)
-        self.texture = self.texturas_parado[self.cur_texture][self.character_face_direction]
+        if self.standup:
+            #ojos abiertos
+            if self.index_textura_parado == 0:
+                if self.timer_parpadeo <= self.FRAMES_OJOS_ABIERTO:
+                    self.timer_parpadeo += 1
+                    print("OJOS ABIERTOS")
+                else:
+                    #se produce un parpadeo
+                    self.timer_parpadeo = 0
+                    self.index_textura_parado += 1
+            elif self.index_textura_parado == 1:
+                if self.timer_parpadeo <= self.FRAMES_PARPADEO:
+                    self.timer_parpadeo += 1
+                    print("OJOS CERRADOS")
+                else:
+                    #se termina el parpadeo o de tener los ojos cerrados
+                    self.index_textura_parado = 0
+                    self.timer_parpadeo = 0
+            self.texture = self.texturas_parado[self.index_textura_parado][self.character_face_direction]
+
+        #self.cur_texture += 1
+        #self.cur_texture %= 54*2
+        #print(self.cur_texture)
+
 
