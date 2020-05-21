@@ -92,7 +92,7 @@ vel_salto = VEL_SALTO_Y
 addImage(list_right_stand, megaman, 440, 0, 490, 71, False)
 addImage(list_right_stand, megaman, 506, 0, 555, 71, False)
 addImage(list_left_stand, megaman, 440, 0, 490, 71, True)
-addImage(list_left_stand, megaman, 506, 0, 555, 71, True)
+addImage(list_left_stand, megaman, 506, 0, 556, 71, True)
 # addImage(list_right_stand, megaman,54,19,73,41,True)
 
 # addImage(list_left_stand, megaman,4,19,23,41,False)
@@ -158,19 +158,38 @@ KEY_IZQUIERDA = pygame.K_j
 cantidad_elementos = 0
 lista_movimientos = []
 pygame.key.set_repeat(0)
+pygame.joystick.init()
+print("Cantidad de Joysticks: {}".format(pygame.joystick.get_count()))
+if pygame.joystick.get_count() > 0:
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
+    print("Nombre: {}".format(joy.get_name()))
+
+
+
 # -------- Bucle principal del Programa -----------
 while not hecho:
     # --- Bucle principal de eventos
+    lista = pygame.key.get_pressed()
+
     for evento in pygame.event.get():
+        evento.key = 0
         if evento.type == pygame.QUIT:
             hecho = True
         if evento.type == pygame.KEYUP:
             CORRIENDO = 1
             delta = 0.15
+        if evento.type == pygame.JOYAXISMOTION:
+            evento.key = 0
+            if joy.get_axis(2) > 0:
+                evento.key = KEY_DERECHA
+                #lista[KEY_DERECHA] = 1
+            elif joy.get_axis(2) < 0:
+                evento.key = KEY_IZQUIERDA
+                #lista[KEY_IZQUIERDA] = 1
 
-        if evento.type == pygame.KEYDOWN:
             if CORRIENDO == 1:
-                if cantidad_ticks_desde_posible_doble > sensibilidad_doble_presionado:
+                if cantidad_ticks_desde_posible_doble < sensibilidad_doble_presionado:
                     lista_movimientos.clear()
                     cantidad_ticks_desde_posible_doble = 0
                 lista_movimientos.append(evento.key)
@@ -181,6 +200,42 @@ while not hecho:
                     if lista_movimientos[-2:-1][0] == lista_movimientos[-3:-2][0]:
                         CORRIENDO = 2
                         delta = 0.25
+
+            if CORRIENDO == 2 and direccion == DIRECCION_DERECHA and evento.key == KEY_IZQUIERDA:
+                CORRIENDO = 1
+                delta = 0.15
+            elif CORRIENDO == 2 and direccion == DIRECCION_IZQUIERDA and evento.key == KEY_DERECHA:
+                CORRIENDO = 1
+                delta = 0.15
+
+            #print(joy.get_numaxes())
+            #help(evento)
+            print(evento)
+            #print(evento.key)
+        if evento.type == pygame.JOYBUTTONDOWN:
+            pass
+
+        if evento.type == pygame.KEYDOWN:
+            if CORRIENDO == 1:
+                if cantidad_ticks_desde_posible_doble < sensibilidad_doble_presionado:
+                    lista_movimientos.clear()
+                    cantidad_ticks_desde_posible_doble = 0
+                lista_movimientos.append(evento.key)
+
+        if len(lista_movimientos) > 10:
+            del(lista_movimientos[0])
+        if len(lista_movimientos) > 2:
+            print(lista_movimientos[-2:-1][0],  lista_movimientos[-3:-2][0])
+            if lista_movimientos[-2:-1][0] == lista_movimientos[-3:-2][0]:
+                CORRIENDO = 2
+                delta = 0.25
+
+        if CORRIENDO == 2 and direccion == DIRECCION_DERECHA and evento.key == KEY_IZQUIERDA:
+            CORRIENDO = 1
+            delta = 0.15
+        elif CORRIENDO == 2 and direccion == DIRECCION_IZQUIERDA and evento.key == KEY_DERECHA:
+            CORRIENDO = 1
+            delta = 0.15
 
             #print("KEYDOWN {}".format(evento.key))
         cantidad_ticks_desde_posible_doble += 1
@@ -203,7 +258,7 @@ while not hecho:
 
     incremento = (VEL_CORRER_X * CORRIENDO)
 
-    if lista[KEY_IZQUIERDA] == 1:
+    if lista[KEY_IZQUIERDA] == 1 or evento.key == KEY_IZQUIERDA:
         index_frame_corriendo = int(delta_acumulado) % len(list_left_run)
         delta_acumulado -= delta
         x -= incremento
@@ -220,7 +275,7 @@ while not hecho:
     #         CORRIENDO = 1
 
 
-    if lista[KEY_DERECHA] == 1:
+    if lista[KEY_DERECHA] == 1 or evento.key == KEY_DERECHA:
         index_frame_corriendo = int(delta_acumulado) % len(list_left_run)
         delta_acumulado += delta
         x += incremento

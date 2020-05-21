@@ -16,7 +16,7 @@ def events():
 
 
 # define display surface
-W, H = 576//2, 1024//2
+W, H = 576, 1024
 HW, HH = W / 2, H / 2
 AREA = W * H
 
@@ -27,9 +27,11 @@ pygame.init()
 CLOCK = pygame.time.Clock()
 DS = pygame.display.set_mode((W, H))
 pygame.display.set_caption("code.Pylet - Scrolling Background Image")
-FPS = 120
+FPS = 200
 
-bkgd = pygame.transform.scale(pygame.image.load("mountains.png").convert(), (910, 1024//2))
+#bkgd = pygame.transform.scale(pygame.image.load("mountains.png").convert(), (910, 1024//2))
+bkgd = pygame.image.load("mountains.png").convert()
+
 x = 0
 
 # main loop
