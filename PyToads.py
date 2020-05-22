@@ -3,7 +3,7 @@ Platformer Game
 """
 import arcade
 import os
-import Toad
+from Toad import Toad
 # Constants
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
@@ -35,7 +35,6 @@ class MyGame(arcade.Window):
 
         # Sprite lists
         self.player_list = None
-        self.coin_list = None
 
         # Set up the player
         self.score = 0
@@ -43,15 +42,13 @@ class MyGame(arcade.Window):
 
     def setup(self):
         self.player_list = arcade.SpriteList()
-        self.coin_list = arcade.SpriteList()
-
         # Set up the player
         self.score = 0
-        self.player = Toad.Toad()
+        self.player = Toad()
 
         self.player.center_x = SCREEN_WIDTH // 2
         self.player.center_y = SCREEN_HEIGHT // 2
-        self.player.scale = 0.8
+        #self.player.scale = 0.8
 
         self.player_list.append(self.player)
         # Set the background color
@@ -61,12 +58,10 @@ class MyGame(arcade.Window):
         """
         Render the screen.
         """
-
         # This command has to happen before we start drawing
         arcade.start_render()
 
         # Draw all the sprites.
-        self.coin_list.draw()
         self.player_list.draw()
 
         # Put the text on the screen.
@@ -98,18 +93,8 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
         """ Movement and game logic """
 
-        self.coin_list.update()
-        self.coin_list.update_animation()
         self.player_list.update()
         self.player_list.update_animation()
-
-        # Generate a list of all sprites that collided with the player.
-        hit_list = arcade.check_for_collision_with_list(self.player, self.coin_list)
-
-        # Loop through each colliding sprite, remove it, and add to the score.
-        for coin in hit_list:
-            coin.remove_from_sprite_lists()
-            self.score += 1
 
 
 def main():
