@@ -31,17 +31,25 @@ class Toad(pygame.sprite.Sprite):
         self.climbing = False
         self.is_on_ladder = False
         self.FRAMES_OJOS_ABIERTO = 100
-        self.MAX_ACELERACION = 4
-        self.INERCIA = 0.3
-        self.ACELERACION = 0.03
+        self.MAX_ACELERACION_X = 4
+        self.MAX_ACELERACION_Y = 4
+        self.TOPE_ALTURA_SALTO = 310
+        self.INERCIA_X = 0
+        self.ACELERACION_x = 0.06
+        self.ACELERACION_y = 0.06
+
         self.FRAMES_PARPADEO = 20
         self.index_textura_parado = 0
         self.index_textura_walking = 0
+        self.index_textura_saltando = 0
+
         self.timer_parpadeo = 0
-        self.vel_salto = 1
-        self.aceleracion = 0
-        self.vel = 0
-        self.pos = (100, 100)
+        self.aceleracion_y = 0
+        self.aceleracion_x = 0
+        self.altura_salto = 0
+        self.vel_x = 0
+        self.vel_y = 0
+        self.pos = (100, 510)
         self.sensibilidad_doble_presionado = 30
         self.cantidad_ticks_desde_posible_doble = 0
         self.cur_texture = None
@@ -50,7 +58,7 @@ class Toad(pygame.sprite.Sprite):
         self.list_stand = []
         self.list_walk = []
         self.list_jump = []
-        self.teclas_prsionadas = {pygame.K_j: False, pygame.K_l: False}
+        self.teclas_presionadas = {pygame.K_j: False, pygame.K_l: False, pygame.K_s: False, pygame.K_a: False}
 
         self.list_stand.append(add_image_pair(megaman, 439, 0, 490, 71))
         self.list_stand.append(add_image_pair(megaman, 505, 0, 556, 71))
@@ -60,14 +68,18 @@ class Toad(pygame.sprite.Sprite):
         self.list_walk.append(add_image_pair(megaman, 123, 0, 189, 71))
         self.list_walk.append(add_image_pair(megaman, 197, 0, 239, 71))
         self.list_walk.append(add_image_pair(megaman, 246, 0, 314, 71))
+
+        self.list_jump.append(add_image_pair(megaman, 125, 14, 186, 69))
+        self.list_jump.append(add_image_pair(megaman, 557, 11, 646, 57))
+
         self.cur_texture = self.cur_texture = self.list_walk[0][self.character_face_direction]
 
     def update_walking(self):
         index = 0
         self.index_textura_walking += 1
-        index = self.index_textura_walking // 8
+        index = self.index_textura_walking // 12
         index %= 5
-        self.pos = (self.pos[0] + self.vel, self.pos[1])
+        self.pos = (self.pos[0] + self.vel_x, self.pos[1])
         # self.texture = self.list_walk[self.index_textura_walking][self.character_face_direction]
         self.cur_texture = self.list_walk[index][self.character_face_direction]
 
@@ -93,48 +105,73 @@ class Toad(pygame.sprite.Sprite):
 
         self.cur_texture = self.list_stand[self.index_textura_parado][self.character_face_direction]
 
+    def update_jumping(self):
+        self.altura_salto += self.vel_y
+        print(self.altura_salto)
+        if self.altura_salto < self.TOPE_ALTURA_SALTO:
+            self.pos = (self.pos[0], self.pos[1] - self.vel_y)
+            self.index_textura_saltando = 0
+            self.cur_texture = self.list_jump[self.index_textura_saltando][self.character_face_direction]
+        else:
+            #bajamos
+            self.pos = (self.pos[0], self.pos[1] + self.vel_y)
+
     def update(self, evento) -> None:
         # keys = pygame.key.get_pressed()
         if evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_j:
-                self.teclas_prsionadas[pygame.K_j] = True
+                self.teclas_presionadas[pygame.K_j] = True
                 self.aceleracion = 0
             elif evento.key == pygame.K_l:
-                self.teclas_prsionadas[pygame.K_l] = True
+                self.teclas_presionadas[pygame.K_l] = True
                 self.aceleracion = 0
+            elif evento.key == pygame.K_s:
+                self.teclas_presionadas[pygame.K_s] = True
         elif evento.type == pygame.KEYUP:
             if evento.key == pygame.K_j:
-                self.teclas_prsionadas[pygame.K_j] = False
+                self.teclas_presionadas[pygame.K_j] = False
                 self.standup = True
-                self.aceleracion = 0
+                self.aceleracion_x = 0
                 self.walking = False
             elif evento.key == pygame.K_l:
-                self.teclas_prsionadas[pygame.K_l] = False
+                self.teclas_presionadas[pygame.K_l] = False
                 self.standup = True
-                self.aceleracion = 0
+                self.aceleracion_x = 0
                 self.walking = False
+            elif evento.key == pygame.K_s:
+                self.teclas_presionadas[pygame.K_s] = False
+                self.standup = False
+                self.jumping = False
 
 
-        if self.teclas_prsionadas[pygame.K_j]:
+        if self.teclas_presionadas[pygame.K_j]:
             self.character_face_direction = LEFT_FACING
             #self.aceleracion = 0
             self.standup = False
             self.walking = True
             self.acelerar()
-            print(self.aceleracion)
-            self.vel = -self.aceleracion + self.INERCIA
-        elif self.teclas_prsionadas[pygame.K_l]:
+            print(self.aceleracion_x)
+            self.vel_x = -self.aceleracion_x + self.INERCIA_X
+        elif self.teclas_presionadas[pygame.K_l]:
             self.character_face_direction = RIGHT_FACING
             self.standup = False
             self.walking = True
             self.acelerar()
-            print(self.aceleracion)
-            self.vel = self.aceleracion - self.INERCIA
+            self.vel_x = self.aceleracion_x - self.INERCIA_X
+        elif self.teclas_presionadas[pygame.K_s]:
+            self.jumping = True
+            self.standup = False
+            self.acelerar_y()
+            self.vel_y = self.aceleracion_y
+
 
         if self.standup:
             self.update_standup()
-        if self.walking:
+        if self.walking and not self.jumping:
             self.update_walking()
+        if self.jumping and not self.walking:
+            self.update_jumping()
+
 
         # for evento in pygame.event.get():
         #     evento.key = 0
@@ -290,8 +327,14 @@ class Toad(pygame.sprite.Sprite):
         # elif direccion == DIRECCION_IZQUIERDA and estado == STATE_PARADO:
         #     pantalla.blit(list_left_stand[index_parado], (x, y))
 
-    def acelerar(self):
-        if self.aceleracion < self.MAX_ACELERACION:
-            self.aceleracion += self.ACELERACION
+    def acelerar_y(self):
+        if self.aceleracion_y < self.MAX_ACELERACION_Y:
+            self.aceleracion_y += self.ACELERACION_y
         else:
-            self.aceleracion = self.MAX_ACELERACION
+            self.aceleracion_y = self.MAX_ACELERACION_Y
+
+    def acelerar(self):
+        if self.aceleracion_x < self.MAX_ACELERACION_X:
+            self.aceleracion_x += self.ACELERACION_x
+        else:
+            self.aceleracion_x = self.MAX_ACELERACION_X

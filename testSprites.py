@@ -35,7 +35,7 @@ FPS = 120
 pygame.init()
 
 # Establecemos las dimensiones de la pantalla [largo,altura]
-dimensiones = [1700,500]
+dimensiones = [1700, 832]
 pantalla = pygame.display.set_mode(dimensiones)
 pygame.display.set_caption("Mi Primer juego en Informática")
 hecho = False
@@ -71,6 +71,7 @@ if pygame.joystick.get_count() > 0:
     joy.init()
     print("Nombre: {}".format(joy.get_name()))
 toad = Toads_pygame.Toad()
+bkgd = pygame.image.load("Megaman/battletoads_turbotunel.png").convert()
 
 
 # -------- Bucle principal del Programa -----------
@@ -84,7 +85,8 @@ while not hecho:
         hecho = True
     toad.update(evento)
 
-    pantalla.fill(ROJO)
+    #pantalla.fill(ROJO)
+    pantalla.blit(bkgd,(0,0))
     # pantalla.blit(fondo,(0,0))
     # index = int(i)%len(list_left_run)
 
