@@ -3,7 +3,7 @@ Platformer Game
 """
 import arcade
 import os
-from Toad import Toad
+from Toad_arcade import Toad
 # Constants
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
