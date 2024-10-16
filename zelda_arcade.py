@@ -41,7 +41,13 @@ class Zelda(arcade.Window):
         arcade.start_render()
         self.player_list.draw()
         # Code to draw the screen goes here
-
+        # arcade.draw_text("Text Drawing Examples {} {}".format(self.player.joystick.x, self.player.joystick.y),
+        #                  110,
+        #                  110,
+        #                  arcade.color.BLACK,
+        #                  20 * 2,
+        #                  width=SCREEN_WIDTH,
+        #                  align="center")
     def on_update(self, delta_time):
         """ Movement and game logic """
 

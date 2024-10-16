@@ -21,7 +21,7 @@ class Zelda_character(arcade.Sprite):
 
         # Get list of game controllers that are available
         joysticks = arcade.get_joysticks()
-
+        print(joysticks)
         # If we have any...
         if joysticks:
             # Grab the first one in  the list
@@ -45,7 +45,6 @@ class Zelda_character(arcade.Sprite):
 
         # Load textures for idle standing front
         self.idle_texture_pair = load_texture_pair(f"{main_path}idle front-01.png")
-
         # Load textures for walking
         self.walk_textures = []
         # creamos listas vacias para lista de animaciones arriba abajo derecha e izqierda
@@ -72,7 +71,8 @@ class Zelda_character(arcade.Sprite):
             nro = "{:02d}".format(i)
             texture = load_texture_pair(f"{main_path}walk side-{nro}.png", flipped=True)
             self.walk_textures[DIRECCION_DERECHA].append(texture)
-
+        self.update_animation()
+        self.hit_box = self.texture.hit_box_points
     def update(self):
         """ Move the player """
 
@@ -80,13 +80,15 @@ class Zelda_character(arcade.Sprite):
         if self.joystick:
 
             # x-axis
-            print("X:{} y:{}".format(self.joystick.x, self.joystick.y))
+            # print("X:{} y:{}".format(self.joystick.x, self.joystick.y))
             self.change_x = self.joystick.x * MOVEMENT_SPEED
             # Set a "dead zone" to prevent drive from a centered joystick
             if abs(self.joystick.x ) < DEAD_ZONE:
                 self.change_x = 0
 
             # y-axis
+            # if self.change_x!=0:
+
             self.change_y = -self.joystick.y * MOVEMENT_SPEED
             # Set a "dead zone" to prevent drive from a centered joystick
             if abs(self.joystick.y) < DEAD_ZONE:
@@ -101,7 +103,6 @@ class Zelda_character(arcade.Sprite):
             self.left = 0
         elif self.right > SCREEN_WIDTH - 1:
             self.right = SCREEN_WIDTH - 1
-
         if self.bottom < 0:
             self.bottom = 0
         elif self.top > SCREEN_HEIGHT - 1:
@@ -138,5 +139,6 @@ class Zelda_character(arcade.Sprite):
             self.cur_texture = 0
         frame = self.cur_texture // UPDATES_PER_FRAME
         self.texture = self.walk_textures[self.character_face_direction][frame]
+        self.hit_box = self.texture.hit_box_points
 
         #self.texture = self.walk_textures[DIRECCION_IZQUIERDA][frame]
